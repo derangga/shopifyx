@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.9"
 
 services:
   postgres:
@@ -7,10 +7,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    container_name: postgres
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
 
 volumes:
-  postgres_data: {}
+  db:
