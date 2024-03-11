@@ -1,3 +1,8 @@
+CREATE TYPE "product_condition" AS ENUM (
+  'NEW',
+  'SECOND'
+);
+
 CREATE TABLE "users" (
   "id" integer PRIMARY KEY,
   "username" varchar,
@@ -15,7 +20,7 @@ CREATE TABLE "product" (
   "price" int,
   "image_url" varchar,
   "stock" int,
-  "condition" enum,
+  "condition" product_condition,
   "tags" text[],
   "is_purchaseable" bool,
   "purchase_count" int,
@@ -44,6 +49,8 @@ CREATE TABLE "payment" (
   "created_at" timestamp,
   "updated_at" timestamp
 );
+
+CREATE INDEX ON "product" ("user_id", "name", "price", "tags");
 
 ALTER TABLE "product" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
