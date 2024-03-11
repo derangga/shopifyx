@@ -1,0 +1,2 @@
+# Requirements
+- install `golang-migrate`
