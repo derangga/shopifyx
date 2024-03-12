@@ -18,14 +18,17 @@ var (
 	repositoriesSet = wire.NewSet(
 		repository.NewUserRepository,
 		repository.NewUnitOfWork,
+		repository.NewBankRepository,
 	)
 
 	usecasesSet = wire.NewSet(
 		usecase.NewAuthUsecase,
+		usecase.NewBankUsecase,
 	)
 
 	handlerSet = wire.NewSet(
 		handler.NewAuthHandler,
+		handler.NewBankHandler,
 	)
 
 	middlewareSet = wire.NewSet(

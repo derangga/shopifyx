@@ -18,6 +18,10 @@ type UserRepository interface {
 	Create(ctx context.Context, req *entity.User) (*entity.User, error)
 }
 
+type BankRepository interface {
+	Create(ctx context.Context, req *entity.Bank) error
+}
+
 type UnitOfWork interface {
 	WithTransaction(ctx context.Context, fn func(ctx context.Context) error) error
 }
