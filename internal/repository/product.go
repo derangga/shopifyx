@@ -5,6 +5,7 @@ import (
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/entity"
+	customError "github.com/derangga/shopifyx/internal/pkg/error"
 	"github.com/derangga/shopifyx/internal/repository/query"
 	"github.com/derangga/shopifyx/internal/repository/record"
 	"github.com/jmoiron/sqlx"
@@ -60,10 +61,17 @@ func (u *product) Update(ctx context.Context, id int, data *entity.Product) erro
 	r := record.ProductEntityToRecord(data)
 	r.ID = id
 
-	_, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable)
+	res, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	rows, err := res.RowsAffected()
+	if rows == 0 {
+		return customError.RowNotFound{
+			Message: "No rows affected",
+		}
+	}
+
+	return err
 }

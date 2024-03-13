@@ -39,10 +39,14 @@ func (uc *product) Create(ctx context.Context, data *entity.Product) (*entity.Pr
 
 func (uc *product) Update(ctx context.Context, id int, data *entity.Product) error {
 	err := uc.productRepo.Update(ctx, id, data)
-	if err != nil {
-		log.Errorf("productUC.Update failed to uc.productRepo.Update: %d %w", id, err)
-		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
-	}
 
-	return nil
+	if _, ok := err.(errorpkg.RowNotFound); ok {
+		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
+		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
+	} else if err != nil {
+		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	} else {
+		return nil
+	}
 }

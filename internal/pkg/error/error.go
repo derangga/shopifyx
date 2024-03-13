@@ -40,3 +40,11 @@ func NewCustomMessageError(message string, httpCode int, err error) error {
 
 	return errors.WithStack(newErr)
 }
+
+type RowNotFound struct {
+	Message string
+}
+
+func (r RowNotFound) Error() string {
+	return "Row not found"
+}
