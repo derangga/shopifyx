@@ -5,7 +5,7 @@ Shopifyx service.
 - Isi env sesuai dengan yang di env.example
 - `go mod download` kalau belum.
 - `go get -u -d github.com/golang-migrate/migrate/cmd/migrate` untuk install golang migrate
-- Jalankan. `go run main.go`.
+- Jalankan. `go run cmd/rest/main.go`.
 
 ## Create migration
 - `migrate create -ext sql -dir db/migrations -seq add_user_table`
