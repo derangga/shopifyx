@@ -56,7 +56,7 @@ func (h *ProductHandler) Create(c echo.Context) error {
 }
 
 func (h *ProductHandler) Update(c echo.Context) error {
-	var req request.Product
+	var req request.ProductUpdate
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
