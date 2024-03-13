@@ -46,5 +46,5 @@ type RowNotFound struct {
 }
 
 func (r RowNotFound) Error() string {
-	return "Row not found"
+	return r.Message
 }
