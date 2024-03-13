@@ -30,9 +30,19 @@ func (uc *product) Create(ctx context.Context, data *entity.Product) (*entity.Pr
 
 	data, err := uc.productRepo.Create(ctx, data)
 	if err != nil {
-		log.Errorf("authUC.Login failed to uc.userRepo.GetByUsername: %w", err)
+		log.Errorf("productUC.Create failed to uc.productRepo.Create: %w", err)
 		return nil, errorpkg.NewCustomError(http.StatusInternalServerError, err)
 	}
 
 	return data, nil
+}
+
+func (uc *product) Update(ctx context.Context, id int, data *entity.Product) error {
+	err := uc.productRepo.Update(ctx, id, data)
+	if err != nil {
+		log.Errorf("productUC.Update failed to uc.productRepo.Update: %d %w", id, err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	}
+
+	return nil
 }

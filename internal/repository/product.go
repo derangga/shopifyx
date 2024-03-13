@@ -55,3 +55,15 @@ func (u *product) Create(ctx context.Context, data *entity.Product) (*entity.Pro
 		return data, nil
 	})
 }
+
+func (u *product) Update(ctx context.Context, id int, data *entity.Product) error {
+	r := record.ProductEntityToRecord(data)
+	r.ID = id
+
+	_, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

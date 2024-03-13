@@ -21,6 +21,7 @@ type UserRepository interface {
 type ProductRepository interface {
 	Get(ctx context.Context, id int) (*entity.Product, error)
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
+	Update(ctx context.Context, id int, req *entity.Product) error
 }
 
 type UnitOfWork interface {
