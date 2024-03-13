@@ -25,8 +25,11 @@ func InitHTTPServer(cfg *config.Config) http.HttpServer {
 	authUsecase := usecase.NewAuthUsecase(userRepository, unitOfWork, authConfig)
 	validate := provideValidator()
 	authHandler := handler.NewAuthHandler(authUsecase, validate)
-	handlers := handler.NewHandlers(authHandler)
-	middlewareFunc := provideJWTMiddleware(authConfig)
-	httpServerItf := http.NewHttpServer(cfg, handlers, middlewareFunc)
-	return httpServerItf
+	productRepository := repository.NewProductRepository(db)
+	productUsecase := usecase.NewProductUsecase(productRepository, unitOfWork)
+	productHandler := handler.NewProductHandler(productUsecase, validate)
+	handlers := handler.NewHandlers(authHandler, productHandler)
+	jwtAuth := provideJWTAuth(authConfig)
+	httpServer := http.NewHttpServer(cfg, handlers, jwtAuth)
+	return httpServer
 }
