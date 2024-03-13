@@ -10,6 +10,7 @@ import (
 
 type Bank struct {
 	ID                int          `db:"id"`
+	UserID            int          `db:"user_id"`
 	BankName          string       `db:"bank_name"`
 	BankAccountName   string       `db:"bank_account_name"`
 	BankAccountNumber string       `db:"bank_account_number"`
@@ -21,6 +22,7 @@ type Bank struct {
 func (r *Bank) ToEntity() *entity.Bank {
 	return &entity.Bank{
 		ID:                r.ID,
+		UserID:            r.UserID,
 		BankName:          r.BankName,
 		BankAccountName:   r.BankAccountName,
 		BankAccountNumber: r.BankAccountNumber,
@@ -33,6 +35,7 @@ func (r *Bank) ToEntity() *entity.Bank {
 func BankEntityToRecord(req *entity.Bank) *Bank {
 	return &Bank{
 		ID:                req.ID,
+		UserID:            req.UserID,
 		BankName:          req.BankName,
 		BankAccountName:   req.BankAccountName,
 		BankAccountNumber: req.BankAccountNumber,

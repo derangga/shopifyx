@@ -4,6 +4,7 @@ import "time"
 
 type Bank struct {
 	ID                int
+	UserID            int
 	BankName          string
 	BankAccountName   string
 	BankAccountNumber string

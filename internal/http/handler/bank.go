@@ -29,8 +29,8 @@ func (h *BankHandler) Create(c echo.Context) error {
 	var req request.CreateBank
 	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BaseResponse{
-			Message: http.StatusText(http.StatusBadRequest),
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: err.Error(),
 		})
 	}
 
