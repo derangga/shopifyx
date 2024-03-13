@@ -18,6 +18,10 @@ type UserRepository interface {
 	Create(ctx context.Context, req *entity.User) (*entity.User, error)
 }
 
+type BankRepository interface {
+	Create(ctx context.Context, req *entity.Bank) error
+}
+
 type ProductRepository interface {
 	Get(ctx context.Context, id int) (*entity.Product, error)
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)

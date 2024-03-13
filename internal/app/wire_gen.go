@@ -20,15 +20,21 @@ func InitHTTPServer(cfg *config.Config) http.HttpServer {
 	databaseConfig := provideDBConfig(cfg)
 	db := provideDB(databaseConfig)
 	userRepository := repository.NewUserRepository(db)
+	bankRepository := repository.NewBankRepository(db)
 	unitOfWork := repository.NewUnitOfWork(db)
+	productRepository := repository.NewProductRepository(db)
+
 	authConfig := provideAuthConfig(cfg)
 	authUsecase := usecase.NewAuthUsecase(userRepository, unitOfWork, authConfig)
+	bankUsecase := usecase.NewBankUsecase(bankRepository)
+	productUsecase := usecase.NewProductUsecase(productRepository, unitOfWork)
+
 	validate := provideValidator()
 	authHandler := handler.NewAuthHandler(authUsecase, validate)
-	productRepository := repository.NewProductRepository(db)
-	productUsecase := usecase.NewProductUsecase(productRepository, unitOfWork)
+	bankHandler := handler.NewBankHandler(bankUsecase, validate)
 	productHandler := handler.NewProductHandler(productUsecase, validate)
-	handlers := handler.NewHandlers(authHandler, productHandler)
+	handlers := handler.NewHandlers(authHandler, bankHandler, productHandler)
+
 	jwtAuth := provideJWTAuth(authConfig)
 	httpServer := http.NewHttpServer(cfg, handlers, jwtAuth)
 	return httpServer
