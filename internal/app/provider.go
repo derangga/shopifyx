@@ -11,12 +11,12 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo/v4"
 )
 
 var (
 	repositoriesSet = wire.NewSet(
 		repository.NewUserRepository,
+		repository.NewProductRepository,
 		repository.NewUnitOfWork,
 		repository.NewBankRepository,
 	)
@@ -24,15 +24,17 @@ var (
 	usecasesSet = wire.NewSet(
 		usecase.NewAuthUsecase,
 		usecase.NewBankUsecase,
+		usecase.NewProductUsecase,
 	)
 
 	handlerSet = wire.NewSet(
 		handler.NewAuthHandler,
 		handler.NewBankHandler,
+		handler.NewProductHandler,
 	)
 
 	middlewareSet = wire.NewSet(
-		provideJWTMiddleware,
+		provideJWTAuth,
 	)
 
 	allSet = wire.NewSet(
@@ -65,6 +67,6 @@ func provideValidator() *validator.Validate {
 	return validator.New()
 }
 
-func provideJWTMiddleware(cfg *config.AuthConfig) echo.MiddlewareFunc {
-	return middleware.NewJWTAuthMiddleware(cfg.JWTSecret)
+func provideJWTAuth(cfg *config.AuthConfig) *middleware.JWTAuth {
+	return middleware.ProvideJWTAuth(cfg.JWTSecret)
 }

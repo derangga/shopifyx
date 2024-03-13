@@ -25,7 +25,33 @@ func NewAuthHandler(authUC internal.AuthUsecase, validate *validator.Validate) *
 }
 
 func (h *AuthHandler) Login(c echo.Context) error {
-	return nil
+	// bind request to struct
+	var req request.Login
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	// validate request data
+	err = h.validate.Struct(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	// proceed to usecase
+	user, err := h.authUC.Login(c.Request().Context(), req.ToEntityUser())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusCreated, response.BaseResponse{
+		Message: "User logged successfully",
+		Data:    response.UserEntityToAuthResponse(user),
+	})
 }
 
 func (h *AuthHandler) Register(c echo.Context) error {

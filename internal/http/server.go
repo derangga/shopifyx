@@ -15,45 +15,44 @@ type HttpServer interface {
 	Stop()
 }
 
-type httpServer struct {
-	echo          *echo.Echo
-	cfg           *config.Config
-	handler       *handler.Handlers
-	jwtMiddleware echo.MiddlewareFunc
+type Server struct {
+	echo    *echo.Echo
+	cfg     *config.Config
+	handler *handler.Handlers
+	jwtAuth *middleware.JWTAuth
 }
 
-// New HTTP Server
 func NewHttpServer(
 	cfg *config.Config,
 	handler *handler.Handlers,
-	jwtMiddleware echo.MiddlewareFunc,
+	jwtAuth *middleware.JWTAuth,
 ) HttpServer {
 	e := echo.New()
 	middleware.SetupGlobalMiddleware(e, cfg.Application)
 
-	srv := &httpServer{
-		echo:          e,
-		cfg:           cfg,
-		handler:       handler,
-		jwtMiddleware: jwtMiddleware,
+	srv := &Server{
+		echo:    e,
+		cfg:     cfg,
+		handler: handler,
+		jwtAuth: jwtAuth,
 	}
 
 	srv.connectCoreWithEcho()
 	return srv
 }
 
-func (h *httpServer) ListenAndServe() error {
-	return h.echo.Start(":" + h.cfg.Application.Port)
+func (s *Server) ListenAndServe() error {
+	return s.echo.Start(":" + s.cfg.Application.Port)
 }
 
-func (h *httpServer) Stop() {
-	e := h.echo
+func (s *Server) Stop() {
+	e := s.echo
 	err := e.Server.Shutdown(context.Background())
 	if err != nil {
 		log.Fatal("failed to open shutdown service:", err.Error())
 	}
 }
 
-func (h *httpServer) connectCoreWithEcho() {
-	RegisterRoute(h.echo, h.handler, h.jwtMiddleware)
+func (s *Server) connectCoreWithEcho() {
+	RegisterRoute(s.echo, s.handler, s.jwtAuth)
 }

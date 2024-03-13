@@ -22,6 +22,11 @@ type BankRepository interface {
 	Create(ctx context.Context, req *entity.Bank) error
 }
 
+type ProductRepository interface {
+	Get(ctx context.Context, id int) (*entity.Product, error)
+	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
+}
+
 type UnitOfWork interface {
 	WithTransaction(ctx context.Context, fn func(ctx context.Context) error) error
 }
