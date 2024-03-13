@@ -58,8 +58,9 @@ type DatabaseConfig struct {
 
 // AuthConfig holds the configuration for auth
 type AuthConfig struct {
-	JWTSecret  string `env:"JWT_SECRET"`
-	BcryptSalt int    `env:"BCRYPT_SALT"  env-default:"8"`
+	JWTSecret        string        `env:"JWT_SECRET"`
+	JWTValidDuration time.Duration `env:"JWT_VALID_DURATION" env-default:"2m"`
+	BcryptSalt       int           `env:"BCRYPT_SALT"        env-default:"8"`
 }
 
 // BucketConfig holds the configuration for bucket

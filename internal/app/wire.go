@@ -10,7 +10,7 @@ import (
 	"github.com/google/wire"
 )
 
-func InitHTTPServer(cfg *config.Config) http.HttpServerItf {
+func InitHTTPServer(cfg *config.Config) http.HttpServer {
 	wire.Build(allSet)
-	return &http.HttpServer{}
+	return &http.Server{}
 }
