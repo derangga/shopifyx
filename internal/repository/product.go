@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/entity"
@@ -61,17 +62,39 @@ func (u *product) Update(ctx context.Context, id int, data *entity.Product) erro
 	r := record.ProductEntityToRecord(data)
 	r.ID = id
 
-	res, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable)
+	res, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable, time.Now())
 	if err != nil {
 		return err
 	}
 
 	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
 	if rows == 0 {
 		return errorpkg.RowNotFound{
 			Message: "Product not found",
 		}
 	}
 
-	return err
+	return nil
+}
+
+func (u *product) Delete(ctx context.Context, id int) error {
+	res, err := u.db.ExecContext(ctx, query.ProductDelete, id, time.Now())
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errorpkg.RowNotFound{
+			Message: "No matching product deleted",
+		}
+	}
+
+	return nil
 }

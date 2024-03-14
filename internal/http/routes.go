@@ -20,4 +20,5 @@ func RegisterRoute(
 	v1.POST("/bank/account", h.BankHandler.Create, authMiddleware)
 	v1.POST("/product", h.ProductHandler.Create, authMiddleware)
 	v1.PATCH("/product/:id", h.ProductHandler.Update, authMiddleware)
+	v1.DELETE("/product/:id", h.ProductHandler.Delete, authMiddleware)
 }

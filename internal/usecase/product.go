@@ -50,3 +50,17 @@ func (uc *product) Update(ctx context.Context, id int, data *entity.Product) err
 		return nil
 	}
 }
+
+func (uc *product) Delete(ctx context.Context, id int) error {
+	err := uc.productRepo.Delete(ctx, id)
+
+	if _, ok := err.(errorpkg.RowNotFound); ok {
+		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
+		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
+	} else if err != nil {
+		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	} else {
+		return nil
+	}
+}

@@ -80,3 +80,21 @@ func (h *ProductHandler) Update(c echo.Context) error {
 		Message: http.StatusText(http.StatusOK),
 	})
 }
+
+func (h *ProductHandler) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	err = h.productUC.Delete(c.Request().Context(), id)
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: http.StatusText(http.StatusOK),
+	})
+}
