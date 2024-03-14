@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS product (
   "deleted_at" timestamp
 );
 
-CREATE INDEX ON "product" ("user_id", "name", "price", "tags");
+CREATE INDEX ON "product" ("user_id", "name", "price", "tags", "deleted_at");
 ALTER TABLE "product" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 commit;
