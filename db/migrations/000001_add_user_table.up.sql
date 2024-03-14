@@ -1,12 +1,13 @@
 begin;
 
 CREATE TABLE IF NOT EXISTS users(
-	id serial primary key not null,
-	username varchar(15) not null,
-	"name" varchar(50) not null,
-	"password" varchar(100) not null,
-	created_at timestamp not null default now(),
-	deleted_at timestamp
+  id serial PRIMARY KEY,
+  username varchar(15) unique not null,
+  "name" varchar(50),
+  "password" varchar(100),
+  created_at timestamp,
+  updated_at timestamp,
+  deleted_at timestamp
 );
 
 commit;
