@@ -98,3 +98,22 @@ func (u *product) Delete(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (u *product) UpdateStock(ctx context.Context, id int, stock int) error {
+	res, err := u.db.ExecContext(ctx, query.ProductStockUpdate, id, stock)
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errorpkg.RowNotFound{
+			Message: "No matching product, stock is not updated",
+		}
+	}
+
+	return nil
+}

@@ -64,3 +64,17 @@ func (uc *product) Delete(ctx context.Context, id int) error {
 		return nil
 	}
 }
+
+func (uc *product) UpdateStock(ctx context.Context, id int, stock int) error {
+	err := uc.productRepo.UpdateStock(ctx, id, stock)
+
+	if _, ok := err.(errorpkg.RowNotFound); ok {
+		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
+		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
+	} else if err != nil {
+		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	} else {
+		return nil
+	}
+}

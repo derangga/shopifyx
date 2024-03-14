@@ -25,6 +25,10 @@ type ProductUpdate struct {
 	IsPurchaseable *bool    `json:"isPurchaseable" validate:"required"`
 }
 
+type UpdateStock struct {
+	Stock int `json:"stock"          validate:"required,min=0"`
+}
+
 func (p *Product) ToEntityProduct() *entity.Product {
 	return &entity.Product{
 		Name:           p.Name,
