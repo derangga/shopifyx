@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/http/request"
@@ -50,6 +52,44 @@ func (h *BankHandler) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, response.BaseResponse{
 		Message: "bank account created successfully",
+		Data:    nil,
+	})
+}
+
+func (h *BankHandler) Update(c echo.Context) error {
+	var req request.UpdateBank
+
+	id, err := strconv.Atoi(c.Param("bankAccountId"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: fmt.Sprintf("%s should be integer, got error: %v", "bankAccountId", err),
+		})
+	}
+
+	req.ID = id
+	err = c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: err.Error(),
+		})
+	}
+
+	// validate request data
+	err = h.validate.Struct(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: err.Error(),
+		})
+	}
+
+	// proceed to usecase
+	err = h.bankUC.Update(c.Request().Context(), req.ToEntityBank())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: "bank account updated successfully",
 		Data:    nil,
 	})
 }
