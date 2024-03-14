@@ -59,8 +59,8 @@ func (h *ProductHandler) Update(c echo.Context) error {
 	var req request.ProductUpdate
 	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BaseResponse{
-			Message: http.StatusText(http.StatusBadRequest),
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
 		})
 	}
 
