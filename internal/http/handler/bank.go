@@ -89,7 +89,7 @@ func (h *BankHandler) Update(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response.BaseResponse{
-		Message: "bank account udpated successfully",
+		Message: "bank account updated successfully",
 		Data:    nil,
 	})
 }
