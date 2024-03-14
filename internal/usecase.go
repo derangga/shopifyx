@@ -19,6 +19,7 @@ type AuthUsecase interface {
 
 type BankUsecase interface {
 	Create(ctx context.Context, req *entity.Bank) error
+	Update(ctx context.Context, req *entity.Bank) error
 }
 
 type ProductUsecase interface {

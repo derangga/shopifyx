@@ -20,6 +20,7 @@ type UserRepository interface {
 
 type BankRepository interface {
 	Create(ctx context.Context, req *entity.Bank) error
+	Update(ctx context.Context, req *entity.Bank) error
 }
 
 type ProductRepository interface {
