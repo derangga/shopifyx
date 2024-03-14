@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/http/request"
@@ -51,5 +52,49 @@ func (h *ProductHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, response.BaseResponse{
 		Message: http.StatusText(http.StatusCreated),
 		Data:    response.ProductEntityToResponse(product),
+	})
+}
+
+func (h *ProductHandler) Update(c echo.Context) error {
+	var req request.ProductUpdate
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
+		})
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	err = h.productUC.Update(c.Request().Context(), id, req.ToEntityProduct())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: http.StatusText(http.StatusOK),
+	})
+}
+
+func (h *ProductHandler) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	err = h.productUC.Delete(c.Request().Context(), id)
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: http.StatusText(http.StatusOK),
 	})
 }
