@@ -58,11 +58,20 @@ func (u *product) Create(ctx context.Context, data *entity.Product) (*entity.Pro
 	})
 }
 
-func (u *product) Update(ctx context.Context, id int, data *entity.Product) error {
+func (u *product) Update(ctx context.Context, data *entity.Product) error {
 	r := record.ProductEntityToRecord(data)
-	r.ID = id
 
-	res, err := u.db.ExecContext(ctx, query.ProductUpdate, r.ID, r.Name, r.Price, r.ImageURL, r.Condition, r.Tags, r.IsPurchaseable, time.Now())
+	res, err := u.db.ExecContext(
+		ctx,
+		query.ProductUpdate,
+		r.ID, r.UserID,
+		r.Name, r.Price,
+		r.ImageURL,
+		r.Condition,
+		r.Tags,
+		r.IsPurchaseable,
+		time.Now(),
+	)
 	if err != nil {
 		return err
 	}
@@ -80,8 +89,8 @@ func (u *product) Update(ctx context.Context, id int, data *entity.Product) erro
 	return nil
 }
 
-func (u *product) Delete(ctx context.Context, id int) error {
-	res, err := u.db.ExecContext(ctx, query.ProductDelete, id, time.Now())
+func (u *product) Delete(ctx context.Context, data *entity.Product) error {
+	res, err := u.db.ExecContext(ctx, query.ProductDelete, data.ID, data.UserID, time.Now())
 	if err != nil {
 		return err
 	}
@@ -99,8 +108,8 @@ func (u *product) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (u *product) UpdateStock(ctx context.Context, id int, stock int) error {
-	res, err := u.db.ExecContext(ctx, query.ProductStockUpdate, id, stock)
+func (u *product) UpdateStock(ctx context.Context, data *entity.Product) error {
+	res, err := u.db.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
 	if err != nil {
 		return err
 	}

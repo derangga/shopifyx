@@ -37,44 +37,58 @@ func (uc *product) Create(ctx context.Context, data *entity.Product) (*entity.Pr
 	return data, nil
 }
 
-func (uc *product) Update(ctx context.Context, id int, data *entity.Product) error {
-	err := uc.productRepo.Update(ctx, id, data)
+func (uc *product) Update(ctx context.Context, data *entity.Product) error {
+	userID := pkgcontext.GetUserIDContext(ctx)
+	data.UserID = userID
+
+	err := uc.productRepo.Update(ctx, data)
 
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
 		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
-	} else if err != nil {
+	}
+	if err != nil {
 		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
 		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
-func (uc *product) Delete(ctx context.Context, id int) error {
-	err := uc.productRepo.Delete(ctx, id)
+func (uc *product) Delete(ctx context.Context, data *entity.Product) error {
+	userID := pkgcontext.GetUserIDContext(ctx)
+	data.UserID = userID
+
+	err := uc.productRepo.Delete(ctx, data)
 
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
 		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
-	} else if err != nil {
+	}
+
+	if err != nil {
 		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
 		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
-func (uc *product) UpdateStock(ctx context.Context, id int, stock int) error {
-	err := uc.productRepo.UpdateStock(ctx, id, stock)
+func (uc *product) UpdateStock(ctx context.Context, data *entity.Product) error {
+	userID := pkgcontext.GetUserIDContext(ctx)
+	data.UserID = userID
+
+	err := uc.productRepo.UpdateStock(ctx, data)
 
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
 		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
-	} else if err != nil {
+	}
+
+	if err != nil {
 		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
 		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
-	} else {
-		return nil
 	}
+
+	return nil
 }

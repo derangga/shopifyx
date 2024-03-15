@@ -23,7 +23,7 @@ type BankUsecase interface {
 
 type ProductUsecase interface {
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
-	Update(ctx context.Context, id int, req *entity.Product) error
-	Delete(ctx context.Context, id int) error
-	UpdateStock(ctx context.Context, id int, stock int) error
+	Update(ctx context.Context, req *entity.Product) error
+	Delete(ctx context.Context, req *entity.Product) error
+	UpdateStock(ctx context.Context, req *entity.Product) error
 }

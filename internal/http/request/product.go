@@ -17,6 +17,7 @@ type Product struct {
 }
 
 type ProductUpdate struct {
+	ID             int      `param:"id" validate:"required"`
 	Name           string   `json:"name"           validate:"required,min=5,max=15"`
 	Price          int      `json:"price"          validate:"required,min=0"`
 	ImageURL       string   `json:"imageUrl"       validate:"required,url"`
@@ -25,7 +26,12 @@ type ProductUpdate struct {
 	IsPurchaseable *bool    `json:"isPurchaseable" validate:"required"`
 }
 
+type DeleteProduct struct {
+	ID int `param:"id" validate:"required"`
+}
+
 type UpdateStock struct {
+	ID    int `param:"id" validate:"required"`
 	Stock int `json:"stock"          validate:"required,min=0"`
 }
 
@@ -43,11 +49,25 @@ func (p *Product) ToEntityProduct() *entity.Product {
 
 func (p *ProductUpdate) ToEntityProduct() *entity.Product {
 	return &entity.Product{
+		ID:             p.ID,
 		Name:           p.Name,
 		Price:          p.Price,
 		ImageURL:       p.ImageURL,
 		Condition:      strings.ToUpper(p.Condition),
 		Tags:           p.Tags,
 		IsPurchaseable: *p.IsPurchaseable,
+	}
+}
+
+func (p *DeleteProduct) ToEntityProduct() *entity.Product {
+	return &entity.Product{
+		ID: p.ID,
+	}
+}
+
+func (p *UpdateStock) ToEntityProduct() *entity.Product {
+	return &entity.Product{
+		ID:    p.ID,
+		Stock: p.Stock,
 	}
 }

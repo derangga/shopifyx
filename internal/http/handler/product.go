@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/http/request"
@@ -64,14 +63,7 @@ func (h *ProductHandler) Update(c echo.Context) error {
 		})
 	}
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BaseResponse{
-			Message: http.StatusText(http.StatusBadRequest),
-		})
-	}
-
-	err = h.productUC.Update(c.Request().Context(), id, req.ToEntityProduct())
+	err = h.productUC.Update(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
@@ -82,14 +74,15 @@ func (h *ProductHandler) Update(c echo.Context) error {
 }
 
 func (h *ProductHandler) Delete(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
+	var req request.DeleteProduct
+	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BaseResponse{
-			Message: http.StatusText(http.StatusBadRequest),
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
 		})
 	}
 
-	err = h.productUC.Delete(c.Request().Context(), id)
+	err = h.productUC.Delete(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
@@ -108,14 +101,13 @@ func (h *ProductHandler) UpdateStock(c echo.Context) error {
 		})
 	}
 
-	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusBadRequest),
 		})
 	}
 
-	err = h.productUC.UpdateStock(c.Request().Context(), id, req.Stock)
+	err = h.productUC.UpdateStock(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
