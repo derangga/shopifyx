@@ -8,4 +8,6 @@ const (
 		WHERE id = $1 AND user_id = $2`
 
 	QuerySoftDeleteBank = `UPDATE bank_account SET deleted_at = now() WHERE id = $1 AND user_id = $2`
+
+	QueryFetchBank = `SELECT id, bank_name, bank_account_name, bank_account_number FROM bank_account WHERE user_id = $1 AND deleted_at is null`
 )
