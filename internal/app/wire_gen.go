@@ -41,6 +41,7 @@ func InitHTTPServer(cfg *config.Config) http.HttpServer {
 	paymentHandler := handler.NewPaymentHandler(paymentUsecase, validate)
 	handlers := handler.NewHandlers(authHandler, bankHandler, productHandler, imageHandler, paymentHandler)
 	jwtAuth := provideJWTAuth(authConfig)
-	httpServer := http.NewHttpServer(cfg, handlers, jwtAuth)
+	histogramVec := providePrometheusHistogram(cfg)
+	httpServer := http.NewHttpServer(cfg, handlers, jwtAuth, histogramVec)
 	return httpServer
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/derangga/shopifyx/internal/http/handler"
 	"github.com/derangga/shopifyx/internal/http/middleware"
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type HttpServer interface {
@@ -16,25 +17,28 @@ type HttpServer interface {
 }
 
 type Server struct {
-	echo    *echo.Echo
-	cfg     *config.Config
-	handler *handler.Handlers
-	jwtAuth *middleware.JWTAuth
+	echo         *echo.Echo
+	cfg          *config.Config
+	handler      *handler.Handlers
+	jwtAuth      *middleware.JWTAuth
+	reqHistogram *prometheus.HistogramVec
 }
 
 func NewHttpServer(
 	cfg *config.Config,
 	handler *handler.Handlers,
 	jwtAuth *middleware.JWTAuth,
+	rh *prometheus.HistogramVec,
 ) HttpServer {
 	e := echo.New()
 	middleware.SetupGlobalMiddleware(e, cfg.Application)
 
 	srv := &Server{
-		echo:    e,
-		cfg:     cfg,
-		handler: handler,
-		jwtAuth: jwtAuth,
+		echo:         e,
+		cfg:          cfg,
+		handler:      handler,
+		jwtAuth:      jwtAuth,
+		reqHistogram: rh,
 	}
 
 	srv.connectCoreWithEcho()
@@ -54,5 +58,5 @@ func (s *Server) Stop() {
 }
 
 func (s *Server) connectCoreWithEcho() {
-	RegisterRoute(s.echo, s.handler, s.jwtAuth)
+	RegisterRoute(s.echo, s.handler, s.jwtAuth, s.reqHistogram)
 }
