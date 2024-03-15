@@ -93,3 +93,23 @@ func (h *BankHandler) Update(c echo.Context) error {
 		Data:    nil,
 	})
 }
+
+func (h *BankHandler) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("bankAccountId"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: fmt.Sprintf("%s should be integer, got error: %v", "bankAccountId", err),
+		})
+	}
+
+	// proceed to usecase
+	err = h.bankUC.Delete(c.Request().Context(), id)
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: "bank account deleted successfully",
+		Data:    nil,
+	})
+}
