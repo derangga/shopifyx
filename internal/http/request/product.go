@@ -35,6 +35,24 @@ type UpdateStock struct {
 	Stock int `json:"stock"          validate:"required,min=0"`
 }
 
+type ListFilter struct {
+	Tags []string `query:"tags"`
+
+	Condition string `query:"condition" validate:"oneof=new second"`
+	Search    string `query:"search"`
+
+	SortBy  string `query:"sortBy"`
+	OrderBy string `query:"orderBy"`
+	Page    int    `query:"offset" default:"1"`
+	Limit   int    `query:"limit" default:"15"`
+
+	MaxPrice int `query:"maxPrice"`
+	MinPrice int `query:"minPrice"`
+
+	UserOnly       bool `query:"userOnly" default:"false"`
+	ShowEmptyStock bool `query:"showEmptyStock" default:"false"`
+}
+
 func (p *Product) ToEntityProduct() *entity.Product {
 	return &entity.Product{
 		Name:           p.Name,
@@ -69,5 +87,21 @@ func (p *UpdateStock) ToEntityProduct() *entity.Product {
 	return &entity.Product{
 		ID:    p.ID,
 		Stock: p.Stock,
+	}
+}
+
+func (p *ListFilter) ToEntityListFilter() *entity.ListFilter {
+	return &entity.ListFilter{
+		UserOnly:       p.UserOnly,
+		Tags:           p.Tags,
+		Condition:      strings.ToUpper(p.Condition),
+		ShowEmptyStock: p.ShowEmptyStock,
+		MaxPrice:       p.MaxPrice,
+		MinPrice:       p.MinPrice,
+		Search:         p.Search,
+		SortBy:         p.SortBy,
+		OrderBy:        p.OrderBy,
+		Page:           p.Page,
+		Limit:          p.Limit,
 	}
 }

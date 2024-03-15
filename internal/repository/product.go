@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/derangga/shopifyx/internal"
@@ -10,6 +13,8 @@ import (
 	"github.com/derangga/shopifyx/internal/repository/query"
 	"github.com/derangga/shopifyx/internal/repository/record"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/gommon/log"
+	"github.com/lib/pq"
 )
 
 type product struct {
@@ -142,4 +147,149 @@ func (u *product) UpdateStock(ctx context.Context, data *entity.Product) error {
 	})
 
 	return err
+}
+
+func (u *product) Fetch(ctx context.Context, filter entity.ListFilter) ([]entity.ListProduct, *entity.MetaTpl, error) {
+	var conditions []string
+	var values []interface{}
+
+	query := `SELECT
+		COUNT(p.id) OVER() AS total,
+		p.id,
+		p.name,
+		p.price,
+		p.image_url,
+		p.stock,
+		p."condition",
+		p.tags,
+		p.is_purchaseable,
+		p.purchase_count
+	FROM product p`
+
+	// only retrieve product active
+	conditions = append(conditions, "p.deleted_at is null")
+
+	// filter tags
+	orCond := []string{}
+	for _, t := range filter.Tags {
+		orCond = append(orCond, "p.tags @> ?")
+		values = append(values, fmt.Sprintf("{%s}", t))
+	}
+	if len(orCond) > 1 {
+		conditions = append(conditions, fmt.Sprintf("(%s)", strings.Join(orCond, " OR ")))
+	}
+	if len(orCond) == 1 {
+		conditions = append(conditions, orCond...)
+	}
+
+	// filter condition
+	if filter.Condition != "" {
+		conditions = append(conditions, "p.condition = ?")
+		values = append(values, filter.Condition)
+	}
+
+	// filter empty stock
+	if filter.ShowEmptyStock {
+		conditions = append(conditions, "p.stock >= 0")
+	} else {
+		conditions = append(conditions, "p.stock > 0")
+	}
+
+	// filter min and max price
+	if filter.MinPrice > 0 && filter.MaxPrice > 0 {
+		conditions = append(conditions, "p.price BETWEEN ? AND ?")
+		values = append(values, filter.MinPrice)
+		values = append(values, filter.MaxPrice)
+	}
+
+	// filter search
+	if len(filter.Search) > 0 {
+		conditions = append(conditions, "p.name ILIKE '%' || ? || '%'")
+		values = append(values, filter.Search)
+	}
+
+	// filter created by
+	if filter.UserOnly {
+		conditions = append(conditions, "p.user_id = ?")
+		values = append(values, filter.UserID)
+	}
+
+	// Build condition
+	if len(conditions) > 0 && len(values) > 0 {
+		query = fmt.Sprintf("%s WHERE %s", query, strings.Join(conditions, " AND "))
+	}
+
+	// build grouping
+	query = fmt.Sprintf("%s GROUP BY p.id, p.created_at", query)
+
+	// build sorting
+	query = fmt.Sprintf("%s ORDER BY p.created_at DESC", query)
+	if len(filter.OrderBy) > 0 && len(filter.SortBy) > 0 {
+		query = fmt.Sprintf("%s, %s %s", query, filter.SortBy, filter.OrderBy)
+	}
+
+	// Build pagination
+	limit := 10
+	if filter.Limit > 0 {
+		limit = filter.Limit
+	}
+	page := 1
+	if filter.Page > 0 {
+		page = filter.Page
+	}
+	offset := limit * (page - 1)
+
+	query = fmt.Sprintf("%s LIMIT ? OFFSET ? ", query)
+	values = append(values, limit)
+	values = append(values, offset)
+
+	query = u.db.Rebind(query)
+
+	result := make([]entity.ListProduct, 0)
+	pagination := new(entity.MetaTpl)
+
+	rows, err := u.db.Query(query, values...)
+	if err != nil {
+		log.Errorf("failed to query list products: %w", err)
+		return nil, nil, errorpkg.NewCustomMessageError("fatal query error", http.StatusInternalServerError, err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		d := entity.ListProduct{}
+		err := rows.Scan(
+			&d.Total,
+			&d.ID,
+			&d.Name,
+			&d.Price,
+			&d.ImageUrl,
+			&d.Stock,
+			&d.Condition,
+			pq.Array(&d.Tags),
+			&d.IsPurchaseable,
+			&d.PurchaseCount,
+		)
+		if err != nil {
+			log.Errorf("failed to query list products: %w", err)
+			return nil, nil, errorpkg.NewCustomMessageError("fatal query error", http.StatusInternalServerError, err)
+		}
+		result = append(result, d)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Errorf("failed to query list products: %w", err)
+		return nil, nil, errorpkg.NewCustomMessageError("fatal query error", http.StatusInternalServerError, err)
+	}
+
+	if len(result) == 0 {
+		pagination.Total = 0
+		return result, pagination, nil
+	}
+
+	pagination.Offset = page
+	pagination.Limit = limit
+	pagination.Total = result[0].Total
+
+	return result, pagination, nil
 }

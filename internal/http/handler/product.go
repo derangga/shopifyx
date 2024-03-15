@@ -127,3 +127,24 @@ func (h *ProductHandler) UpdateStock(c echo.Context) error {
 		Message: http.StatusText(http.StatusOK),
 	})
 }
+
+func (h *ProductHandler) Fetch(c echo.Context) error {
+	var req request.ListFilter
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
+		})
+	}
+
+	resp, err := h.productUC.Fetch(c.Request().Context(), *req.ToEntityListFilter())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: "ok",
+		Data:    resp.Data,
+		Meta:    (*response.MetaTpl)(&resp.Meta),
+	})
+}
