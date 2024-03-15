@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/http/request"
@@ -64,14 +63,35 @@ func (h *ProductHandler) Update(c echo.Context) error {
 		})
 	}
 
-	id, err := strconv.Atoi(c.Param("id"))
+	// validate request data
+	err = h.validate.Struct(req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusBadRequest),
 		})
 	}
 
-	err = h.productUC.Update(c.Request().Context(), id, req.ToEntityProduct())
+	product, err := h.productUC.Update(c.Request().Context(), req.ToEntityProduct())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: http.StatusText(http.StatusOK),
+		Data:    response.ProductEntityToResponse(product),
+	})
+}
+
+func (h *ProductHandler) Delete(c echo.Context) error {
+	var req request.DeleteProduct
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
+		})
+	}
+
+	err = h.productUC.Delete(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
@@ -81,15 +101,24 @@ func (h *ProductHandler) Update(c echo.Context) error {
 	})
 }
 
-func (h *ProductHandler) Delete(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
+func (h *ProductHandler) UpdateStock(c echo.Context) error {
+	var req request.UpdateStock
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
+		})
+	}
+
+	// validate request data
+	err = h.validate.Struct(req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusBadRequest),
 		})
 	}
 
-	err = h.productUC.Delete(c.Request().Context(), id)
+	err = h.productUC.UpdateStock(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
