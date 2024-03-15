@@ -136,19 +136,9 @@ func (u *product) UpdateStock(ctx context.Context, data *entity.Product) error {
 		return err
 	}
 
-	res, err := u.db.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
+	_, err = u.db.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
 	if err != nil {
 		return err
-	}
-
-	rows, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows == 0 {
-		return errorpkg.RowNotFound{
-			Message: "No matching product, stock is not updated",
-		}
 	}
 
 	return nil
