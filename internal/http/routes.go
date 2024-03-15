@@ -33,4 +33,6 @@ func RegisterRoute(
 
 	// image upload
 	v1.POST("/image", h.ImageHandler.Upload, authMiddleware)
+	// payment
+	v1.POST("/product/:id/buy", h.PaymentHandler.Create, authMiddleware)
 }

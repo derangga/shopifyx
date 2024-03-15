@@ -85,6 +85,12 @@ func (uc *product) UpdateStock(ctx context.Context, data *entity.Product) error 
 	userID := pkgcontext.GetUserIDContext(ctx)
 	data.UserID = userID
 
+	if userID != data.ID {
+		return errorpkg.ForbiddenAction{
+			Message: "You're not allowed to update this product",
+		}
+	}
+
 	err := uc.productRepo.UpdateStock(ctx, data)
 
 	if _, ok := err.(errorpkg.ForbiddenAction); ok {

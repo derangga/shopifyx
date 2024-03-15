@@ -5,6 +5,7 @@ type Handlers struct {
 	*BankHandler
 	*ProductHandler
 	*ImageHandler
+	*PaymentHandler
 }
 
 func NewHandlers(
@@ -12,11 +13,13 @@ func NewHandlers(
 	bankHandler *BankHandler,
 	productHandler *ProductHandler,
 	imageHandler *ImageHandler,
+	paymentHandler *PaymentHandler,
 ) *Handlers {
 	return &Handlers{
 		authHandler,
 		bankHandler,
 		productHandler,
 		imageHandler,
+		paymentHandler,
 	}
 }

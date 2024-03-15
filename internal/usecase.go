@@ -29,3 +29,7 @@ type ProductUsecase interface {
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error
 }
+
+type PaymentUsecase interface {
+	Create(ctx context.Context, req *entity.Payment) error
+}

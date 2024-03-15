@@ -92,3 +92,15 @@ func (b *bank) SoftDelete(ctx context.Context, data *entity.Bank) error {
 
 	return nil
 }
+
+// Get implements internal.BankRepository.
+func (b *bank) Get(ctx context.Context, id int) (*entity.Bank, error) {
+	var bankRecord record.Bank
+
+	err := b.db.GetContext(ctx, &bankRecord, query.QueryBankGetByID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return bankRecord.ToEntity(), nil
+}
