@@ -31,6 +31,7 @@ var (
 		repository.NewBankRepository,
 		repository.NewImageRepository,
 		repository.NewUnitOfWork,
+		repository.NewPaymentRepository,
 	)
 
 	usecasesSet = wire.NewSet(
@@ -38,6 +39,7 @@ var (
 		usecase.NewBankUsecase,
 		usecase.NewProductUsecase,
 		usecase.NewImageUsecase,
+		usecase.NewPaymentUsecase,
 	)
 
 	handlerSet = wire.NewSet(
@@ -45,6 +47,7 @@ var (
 		handler.NewBankHandler,
 		handler.NewProductHandler,
 		handler.NewImageHandler,
+		handler.NewPaymentHandler,
 	)
 
 	middlewareSet = wire.NewSet(

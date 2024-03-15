@@ -18,6 +18,7 @@ type BankRepository interface {
 	Update(ctx context.Context, req *entity.Bank) error
 	SoftDelete(ctx context.Context, req *entity.Bank) error
 	Fetch(ctx context.Context, userID int) ([]entity.ListBank, error)
+	Get(ctx context.Context, id int) (*entity.Bank, error)
 }
 
 type ProductRepository interface {
@@ -30,6 +31,10 @@ type ProductRepository interface {
 
 type ImageRepository interface {
 	Upload(ctx context.Context, bucket string, key string, file *bytes.Buffer) error
+}
+
+type PaymentRepository interface {
+	Create(ctx context.Context, req *entity.Payment) error
 }
 
 type UnitOfWork interface {
