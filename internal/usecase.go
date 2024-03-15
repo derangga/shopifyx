@@ -28,4 +28,5 @@ type ProductUsecase interface {
 	Update(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error
+	Fetch(ctx context.Context, filter entity.ListFilter) (entity.ListResponse, error)
 }

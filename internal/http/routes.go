@@ -33,4 +33,7 @@ func RegisterRoute(
 
 	// image upload
 	v1.POST("/image", h.ImageHandler.Upload, authMiddleware)
+
+	// product page
+	v1.GET("/product", h.ProductHandler.Fetch, authMiddleware)
 }

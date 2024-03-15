@@ -102,3 +102,22 @@ func (uc *product) UpdateStock(ctx context.Context, data *entity.Product) error 
 
 	return nil
 }
+
+func (uc *product) Fetch(ctx context.Context, filter entity.ListFilter) (entity.ListResponse, error) {
+	userID := pkgcontext.GetUserIDContext(ctx)
+	filter.UserID = userID
+
+	result, pagination, err := uc.productRepo.Fetch(ctx, filter)
+	if err != nil {
+		return entity.ListResponse{}, err
+	}
+
+	return entity.ListResponse{
+		Data: result,
+		Meta: entity.MetaTpl{
+			Offset: filter.Page,
+			Limit:  filter.Limit,
+			Total:  pagination.Total,
+		},
+	}, nil
+}
