@@ -18,6 +18,18 @@ func NewBankUsecase(bankRepo internal.BankRepository) internal.BankUsecase {
 	}
 }
 
+// Fetch implements internal.BankUsecase.
+func (uc *bank) Fetch(ctx context.Context) ([]entity.ListBank, error) {
+	userID := pkgcontext.GetUserIDContext(ctx)
+
+	result, err := uc.bankRepo.Fetch(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // Create implements internal.BankUsecase.
 func (uc *bank) Create(ctx context.Context, req *entity.Bank) error {
 	req.UserID = pkgcontext.GetUserIDContext(ctx)

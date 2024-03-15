@@ -21,6 +21,7 @@ type BankUsecase interface {
 	Create(ctx context.Context, req *entity.Bank) error
 	Update(ctx context.Context, req *entity.Bank) error
 	Delete(ctx context.Context, id int) error
+	Fetch(ctx context.Context) ([]entity.ListBank, error)
 }
 
 type ProductUsecase interface {

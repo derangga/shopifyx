@@ -22,6 +22,7 @@ type BankRepository interface {
 	Create(ctx context.Context, req *entity.Bank) error
 	Update(ctx context.Context, req *entity.Bank) error
 	SoftDelete(ctx context.Context, req *entity.Bank) error
+	Fetch(ctx context.Context, userID int) ([]entity.ListBank, error)
 }
 
 type ProductRepository interface {

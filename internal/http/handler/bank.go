@@ -113,3 +113,16 @@ func (h *BankHandler) Delete(c echo.Context) error {
 		Data:    nil,
 	})
 }
+
+func (h *BankHandler) Fetch(c echo.Context) error {
+	// proceed to usecase
+	res, err := h.bankUC.Fetch(c.Request().Context())
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Message: "success",
+		Data:    res,
+	})
+}

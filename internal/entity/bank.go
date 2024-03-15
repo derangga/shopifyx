@@ -12,3 +12,10 @@ type Bank struct {
 	UpdatedAt         time.Time
 	DeletedAt         time.Time
 }
+
+type ListBank struct {
+	ID                int    `json:"bankId" db:"id"`
+	BankName          string `json:"bankName" db:"bank_name"`
+	BankAccountName   string `json:"bankAccountName" db:"bank_account_name"`
+	BankAccountNumber string `json:"bankAccountNumber" db:"bank_account_number"`
+}

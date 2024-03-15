@@ -23,6 +23,19 @@ func NewBankRepository(db *sqlx.DB) internal.BankRepository {
 	}
 }
 
+// Fetch implements internal.BankRepository.
+func (b *bank) Fetch(ctx context.Context, userID int) ([]entity.ListBank, error) {
+	var result []entity.ListBank
+
+	err := b.db.SelectContext(ctx, &result, query.QueryFetchBank, userID)
+	if err != nil {
+		log.Errorf("failed to fetch bank account: %w", err)
+		return result, errorpkg.NewCustomMessageError("fatal query error", http.StatusInternalServerError, err)
+	}
+
+	return result, nil
+}
+
 // Create implements internal.BankRepository.
 func (b *bank) Create(ctx context.Context, data *entity.Bank) error {
 	bankRecord := record.BankEntityToRecord(data)
