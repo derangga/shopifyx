@@ -1,16 +1,11 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/derangga/shopifyx/internal/entity"
 )
-
-// Repositories is list of available repository
-type Repositories struct {
-	UserRepository UserRepository
-	UOW            UnitOfWork
-}
 
 type UserRepository interface {
 	Get(ctx context.Context, id int) (*entity.User, error)
@@ -30,6 +25,10 @@ type ProductRepository interface {
 	Update(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error
+}
+
+type ImageRepository interface {
+	Upload(ctx context.Context, bucket string, key string, file *bytes.Buffer) error
 }
 
 type UnitOfWork interface {

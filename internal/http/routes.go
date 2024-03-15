@@ -29,4 +29,7 @@ func RegisterRoute(
 	v1.PATCH("/product/:id", h.ProductHandler.Update, authMiddleware)
 	v1.DELETE("/product/:id", h.ProductHandler.Delete, authMiddleware)
 	v1.POST("/product/:id/stock", h.ProductHandler.UpdateStock, authMiddleware)
+
+	// image upload
+	v1.POST("/image", h.ImageHandler.Upload, authMiddleware)
 }

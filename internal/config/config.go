@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -65,9 +66,15 @@ type AuthConfig struct {
 
 // BucketConfig holds the configuration for bucket
 type BucketConfig struct {
-	ID      string `env:"S3_ID"`
-	Secret  string `env:"S3_SECRET_KEY"`
-	BaseURL string `env:"S3_BASE_URL"`
+	ID         string `env:"S3_ID"`
+	Secret     string `env:"S3_SECRET_KEY"`
+	BucketName string `env:"S3_BUCKET_NAME" env-default:"sprint-bucket-public-read"`
+	Region     string `env:"S3_REGION"      env-default:"ap-southeast-1"`
+	BaseURL    string `env:"S3_BASE_URL"`
+}
+
+func (c *BucketConfig) ConstructURL() string {
+	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com", c.BucketName, c.Region)
 }
 
 // MonitoringConfig holds the configuration for monitoring
