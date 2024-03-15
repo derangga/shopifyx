@@ -37,22 +37,26 @@ func (uc *product) Create(ctx context.Context, data *entity.Product) (*entity.Pr
 	return data, nil
 }
 
-func (uc *product) Update(ctx context.Context, data *entity.Product) error {
+func (uc *product) Update(ctx context.Context, data *entity.Product) (*entity.Product, error) {
 	userID := pkgcontext.GetUserIDContext(ctx)
 	data.UserID = userID
 
-	err := uc.productRepo.Update(ctx, data)
+	product, err := uc.productRepo.Update(ctx, data)
 
+	if _, ok := err.(errorpkg.ForbiddenAction); ok {
+		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
+		return nil, errorpkg.NewCustomMessageError(err.Error(), http.StatusForbidden, err)
+	}
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
-		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
+		return nil, errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
 	}
 	if err != nil {
 		log.Errorf("productUC.Update failed to uc.productRepo.Update: %w", err)
-		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+		return nil, errorpkg.NewCustomError(http.StatusInternalServerError, err)
 	}
 
-	return nil
+	return product, nil
 }
 
 func (uc *product) Delete(ctx context.Context, data *entity.Product) error {
@@ -61,11 +65,14 @@ func (uc *product) Delete(ctx context.Context, data *entity.Product) error {
 
 	err := uc.productRepo.Delete(ctx, data)
 
+	if _, ok := err.(errorpkg.ForbiddenAction); ok {
+		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
+		return errorpkg.NewCustomMessageError(err.Error(), http.StatusForbidden, err)
+	}
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
 		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
 	}
-
 	if err != nil {
 		log.Errorf("productUC.Delete failed to uc.productRepo.Delete: %w", err)
 		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
@@ -80,11 +87,14 @@ func (uc *product) UpdateStock(ctx context.Context, data *entity.Product) error 
 
 	err := uc.productRepo.UpdateStock(ctx, data)
 
+	if _, ok := err.(errorpkg.ForbiddenAction); ok {
+		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
+		return errorpkg.NewCustomMessageError(err.Error(), http.StatusForbidden, err)
+	}
 	if _, ok := err.(errorpkg.RowNotFound); ok {
 		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
 		return errorpkg.NewCustomMessageError(err.Error(), http.StatusNotFound, err)
 	}
-
 	if err != nil {
 		log.Errorf("productUC.UpdateStock failed to uc.productRepo.UpdateStock: %w", err)
 		return errorpkg.NewCustomError(http.StatusInternalServerError, err)

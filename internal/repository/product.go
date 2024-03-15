@@ -22,6 +22,24 @@ func NewProductRepository(db *sqlx.DB) internal.ProductRepository {
 	}
 }
 
+func (u *product) validateProductBeforeModified(ctx context.Context, id int, userId int) (*entity.Product, error) {
+	product, err := u.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if product == nil {
+		return nil, errorpkg.RowNotFound{
+			Message: "Product not found",
+		}
+	}
+	if product.UserID != userId {
+		return nil, errorpkg.ForbiddenAction{
+			Message: "You're not allowed to update this product",
+		}
+	}
+	return product, nil
+}
+
 // Get implements internal.UserRepository.
 func (u *product) Get(ctx context.Context, id int) (*entity.Product, error) {
 	var productRecord record.Product
@@ -58,10 +76,17 @@ func (u *product) Create(ctx context.Context, data *entity.Product) (*entity.Pro
 	})
 }
 
-func (u *product) Update(ctx context.Context, data *entity.Product) error {
+func (u *product) Update(ctx context.Context, data *entity.Product) (*entity.Product, error) {
+
+	product, err := u.validateProductBeforeModified(ctx, data.ID, data.UserID)
+	if err != nil {
+		return nil, err
+	}
+
 	r := record.ProductEntityToRecord(data)
 
-	res, err := u.db.ExecContext(
+	updatedAt := time.Now()
+	_, err = u.db.ExecContext(
 		ctx,
 		query.ProductUpdate,
 		r.ID, r.UserID,
@@ -70,26 +95,23 @@ func (u *product) Update(ctx context.Context, data *entity.Product) error {
 		r.Condition,
 		r.Tags,
 		r.IsPurchaseable,
-		time.Now(),
+		updatedAt,
 	)
-	if err != nil {
-		return err
-	}
 
-	rows, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if rows == 0 {
-		return errorpkg.RowNotFound{
-			Message: "Product not found",
-		}
-	}
+	product.UpdatedAt = updatedAt
 
-	return nil
+	return product, nil
 }
 
 func (u *product) Delete(ctx context.Context, data *entity.Product) error {
+	_, err := u.validateProductBeforeModified(ctx, data.ID, data.UserID)
+	if err != nil {
+		return err
+	}
+
 	res, err := u.db.ExecContext(ctx, query.ProductDelete, data.ID, data.UserID, time.Now())
 	if err != nil {
 		return err
@@ -109,6 +131,11 @@ func (u *product) Delete(ctx context.Context, data *entity.Product) error {
 }
 
 func (u *product) UpdateStock(ctx context.Context, data *entity.Product) error {
+	_, err := u.validateProductBeforeModified(ctx, data.ID, data.UserID)
+	if err != nil {
+		return err
+	}
+
 	res, err := u.db.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
 	if err != nil {
 		return err

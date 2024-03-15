@@ -41,6 +41,14 @@ func NewCustomMessageError(message string, httpCode int, err error) error {
 	return errors.WithStack(newErr)
 }
 
+type ForbiddenAction struct {
+	Message string
+}
+
+func (r ForbiddenAction) Error() string {
+	return r.Message
+}
+
 type RowNotFound struct {
 	Message string
 }

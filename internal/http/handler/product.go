@@ -63,13 +63,22 @@ func (h *ProductHandler) Update(c echo.Context) error {
 		})
 	}
 
-	err = h.productUC.Update(c.Request().Context(), req.ToEntityProduct())
+	// validate request data
+	err = h.validate.Struct(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	product, err := h.productUC.Update(c.Request().Context(), req.ToEntityProduct())
 	if err != nil {
 		return NewCustomErrorResponse(c, err)
 	}
 
 	return c.JSON(http.StatusOK, response.BaseResponse{
 		Message: http.StatusText(http.StatusOK),
+		Data:    response.ProductEntityToResponse(product),
 	})
 }
 
@@ -101,6 +110,8 @@ func (h *ProductHandler) UpdateStock(c echo.Context) error {
 		})
 	}
 
+	// validate request data
+	err = h.validate.Struct(req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusBadRequest),
