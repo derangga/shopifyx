@@ -105,7 +105,7 @@ func (h *ProductHandler) UpdateStock(c echo.Context) error {
 	var req request.UpdateStock
 	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusInternalServerError),
 		})
 	}

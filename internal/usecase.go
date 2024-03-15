@@ -30,3 +30,7 @@ type ProductUsecase interface {
 	UpdateStock(ctx context.Context, req *entity.Product) error
 	Fetch(ctx context.Context, filter entity.ListFilter) (entity.ListResponse, error)
 }
+
+type PaymentUsecase interface {
+	Create(ctx context.Context, req *entity.Payment) error
+}

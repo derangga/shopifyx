@@ -136,17 +136,17 @@ func (u *product) Delete(ctx context.Context, data *entity.Product) error {
 }
 
 func (u *product) UpdateStock(ctx context.Context, data *entity.Product) error {
-	_, err := u.validateProductBeforeModified(ctx, data.ID, data.UserID)
-	if err != nil {
-		return err
-	}
+	//modify it to allow reuse by payment
+	_, err := handleTransaction(ctx, u.db, func(ctx context.Context, tx *sqlx.Tx) (*entity.Product, error) {
+		_, err := tx.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
+		if err != nil {
+			return nil, err
+		}
 
-	_, err = u.db.ExecContext(ctx, query.ProductStockUpdate, data.ID, data.UserID, data.Stock)
-	if err != nil {
-		return err
-	}
+		return nil, nil
+	})
 
-	return nil
+	return err
 }
 
 func (u *product) Fetch(ctx context.Context, filter entity.ListFilter) ([]entity.ListProduct, *entity.MetaTpl, error) {
