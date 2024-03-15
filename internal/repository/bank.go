@@ -57,3 +57,25 @@ func (b *bank) Update(ctx context.Context, data *entity.Bank) error {
 
 	return nil
 }
+
+// SoftDelete implements internal.BankRepository.
+func (b *bank) SoftDelete(ctx context.Context, data *entity.Bank) error {
+	bankRecord := record.BankEntityToRecord(data)
+
+	res, err := b.db.ExecContext(ctx, query.QuerySoftDeleteBank, bankRecord.ID, bankRecord.UserID)
+	if err != nil {
+		log.Errorf("failed to delete bank account: %w", err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	}
+
+	row, err := res.RowsAffected()
+	if err != nil {
+		log.Errorf("failed retrieve affected rows: %w", err)
+		return errorpkg.NewCustomError(http.StatusInternalServerError, err)
+	}
+	if row == 0 {
+		return errorpkg.NewCustomMessageError("bank account not found", http.StatusNotFound, err)
+	}
+
+	return nil
+}

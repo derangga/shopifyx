@@ -41,3 +41,15 @@ func (uc *bank) Update(ctx context.Context, req *entity.Bank) error {
 
 	return nil
 }
+
+// Delete implements internal.BankUsecase.
+func (uc *bank) Delete(ctx context.Context, id int) error {
+	userID := pkgcontext.GetUserIDContext(ctx)
+
+	err := uc.bankRepo.SoftDelete(ctx, &entity.Bank{ID: id, UserID: userID})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
