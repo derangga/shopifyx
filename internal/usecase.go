@@ -25,6 +25,7 @@ type ImageUsecase interface {
 
 type ProductUsecase interface {
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
+	GetDetailedByID(ctx context.Context, id int) (*entity.ProductDetail, error)
 	Update(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error

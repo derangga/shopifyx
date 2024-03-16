@@ -24,6 +24,7 @@ type BankRepository interface {
 type ProductRepository interface {
 	Get(ctx context.Context, id int) (*entity.Product, error)
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
+	GetDetailedByID(ctx context.Context, id int, userId int) (*entity.ProductDetail, error)
 	Update(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error

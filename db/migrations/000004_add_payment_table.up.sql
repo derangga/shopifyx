@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS payment(
   updated_at timestamp
 );
 
+CREATE INDEX ON "payment" (id, product_id, bank_account_id);
+
 ALTER TABLE payment ADD FOREIGN KEY (product_id) REFERENCES product (id);
 
 ALTER TABLE payment ADD FOREIGN KEY (bank_account_id) REFERENCES bank_account (id);

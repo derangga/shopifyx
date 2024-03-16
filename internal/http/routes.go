@@ -26,6 +26,7 @@ func RegisterRoute(
 	v1.DELETE("/bank/account/:bankAccountId", h.BankHandler.Delete, authMiddleware)
 
 	// product management
+	v1.GET("/product/:id", h.ProductHandler.GetDetailedByID, authMiddleware)
 	v1.POST("/product", h.ProductHandler.Create, authMiddleware)
 	v1.PATCH("/product/:id", h.ProductHandler.Update, authMiddleware)
 	v1.DELETE("/product/:id", h.ProductHandler.Delete, authMiddleware)
@@ -33,8 +34,8 @@ func RegisterRoute(
 
 	// image upload
 	v1.POST("/image", h.ImageHandler.Upload, authMiddleware)
-  // product page
+	// product page
 	v1.GET("/product", h.ProductHandler.Fetch, authMiddleware)
-  // payment
+	// payment
 	v1.POST("/product/:id/buy", h.PaymentHandler.Create, authMiddleware)
 }

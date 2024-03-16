@@ -7,7 +7,7 @@ import (
 )
 
 type Product struct {
-	Name           string   `json:"name"           validate:"required,min=5,max=15"`
+	Name           string   `json:"name"           validate:"required,min=5,max=50"`
 	Price          int      `json:"price"          validate:"required,min=0"`
 	ImageURL       string   `json:"imageUrl"       validate:"required,url"`
 	Stock          int      `json:"stock"          validate:"required,min=0"`

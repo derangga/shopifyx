@@ -30,6 +30,11 @@ func NewProductRepository(db *sqlx.DB) internal.ProductRepository {
 func (u *product) validateProductBeforeModified(ctx context.Context, id int, userId int) (*entity.Product, error) {
 	product, err := u.Get(ctx, id)
 	if err != nil {
+		if strings.Contains(err.Error(), "no rows in result set") {
+			return nil, errorpkg.RowNotFound{
+				Message: "Product not found",
+			}
+		}
 		return nil, err
 	}
 	if product == nil {
@@ -55,6 +60,27 @@ func (u *product) Get(ctx context.Context, id int) (*entity.Product, error) {
 	}
 
 	return productRecord.ToEntity(), nil
+}
+
+func (u *product) GetDetailedByID(ctx context.Context, id int, userId int) (*entity.ProductDetail, error) {
+	var productDetailRecord record.ProductDetail
+	var productSoldTotal int
+
+	err := u.db.GetContext(ctx, &productDetailRecord, query.ProductDetailByID, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = u.db.GetContext(ctx, &productSoldTotal, query.ProductUserSoldTotal, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	entity := productDetailRecord.ToEntity()
+	entity.Seller.ProductSoldTotal = productSoldTotal
+
+	return entity, nil
 }
 
 // Create implements internal.ProductRepository.
