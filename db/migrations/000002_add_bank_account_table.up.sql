@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS bank_account(
 	deleted_at timestamp
 );
 
-CREATE INDEX ON "bank_account" (id, user_id);
+CREATE INDEX ON "bank_account" (user_id);
 
 ALTER TABLE bank_account ADD CONSTRAINT bank_account_fk_users FOREIGN KEY (user_id) REFERENCES users(id);
 

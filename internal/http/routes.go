@@ -40,6 +40,7 @@ func RegisterRoute(
 	newRoute(v1, http.MethodDelete, "/bank/account/:bankAccountId", h.BankHandler.Delete, authMiddleware)
 
 	// product
+	newRoute(v1, http.MethodGet, "/product/:id", h.ProductHandler.GetDetailedByID, authMiddleware)
 	newRoute(v1, http.MethodGet, "/product", h.ProductHandler.Fetch, authMiddleware)
 	newRoute(v1, http.MethodPost, "/product", h.ProductHandler.Create, authMiddleware)
 	newRoute(v1, http.MethodPatch, "/product/:id", h.ProductHandler.Update, authMiddleware)

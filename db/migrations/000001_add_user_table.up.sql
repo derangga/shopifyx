@@ -10,6 +10,6 @@ CREATE TABLE IF NOT EXISTS users(
   deleted_at timestamp
 );
 
-CREATE INDEX ON "users" (id, username);
+CREATE INDEX ON "users" (username);
 
 commit;
