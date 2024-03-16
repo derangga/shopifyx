@@ -31,7 +31,7 @@ func (h *BankHandler) Create(c echo.Context) error {
 	var req request.CreateBank
 	err := c.Bind(&req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, response.BaseResponse{
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: err.Error(),
 		})
 	}
@@ -50,7 +50,7 @@ func (h *BankHandler) Create(c echo.Context) error {
 		return NewCustomErrorResponse(c, err)
 	}
 
-	return c.JSON(http.StatusCreated, response.BaseResponse{
+	return c.JSON(http.StatusOK, response.BaseResponse{
 		Message: "bank account created successfully",
 	})
 }

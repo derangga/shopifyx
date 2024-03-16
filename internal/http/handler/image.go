@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/constant"
@@ -39,8 +40,8 @@ func (h *ImageHandler) Upload(c echo.Context) error {
 		})
 	}
 
-	fileType := src.Header.Get(echo.HeaderContentType)
-	if fileType != constant.MIMETypeJPEG {
+	fileFormat := strings.ToLower(strings.Split(src.Filename, ".")[1])
+	if fileFormat != constant.FileTypeJPEG && fileFormat != constant.FileTypeJPG {
 		return c.JSON(http.StatusBadRequest, response.BaseResponse{
 			Message: http.StatusText(http.StatusBadRequest),
 		})

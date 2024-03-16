@@ -49,7 +49,7 @@ func MustGet() *Config {
 
 		cfg.Auth = AuthConfig{
 			JWTSecret:        helper.GetEnvWithDefault(constant.EnvKeyJwtSecret, "").ToString(),
-			JWTValidDuration: helper.GetEnvWithDefault(constant.EnvKeyJwtValidDuration, "2m").ToDuration(),
+			JWTValidDuration: helper.GetEnvWithDefault(constant.EnvKeyJwtValidDuration, "1h").ToDuration(),
 			BcryptSalt:       helper.GetEnvWithDefault(constant.EnvKeyBcryptSalt, "8").ToInt(),
 		}
 
@@ -57,7 +57,7 @@ func MustGet() *Config {
 			ID:         helper.GetEnvWithDefault(constant.EnvKeyS3ID, "").ToString(),
 			Secret:     helper.GetEnvWithDefault(constant.EnvKeyS3Secret, "").ToString(),
 			BucketName: helper.GetEnvWithDefault(constant.EnvKeyS3BucketName, "").ToString(),
-			Region:     helper.GetEnvWithDefault(constant.EnvKeyS3Region, "ap-southeast-3").ToString(),
+			Region:     helper.GetEnvWithDefault(constant.EnvKeyS3Region, "ap-southeast-1").ToString(),
 			BaseURL:    helper.GetEnvWithDefault(constant.EnvKeyS3BaseURL, "").ToString(),
 		}
 
@@ -99,7 +99,7 @@ type DatabaseConfig struct {
 // AuthConfig holds the configuration for auth
 type AuthConfig struct {
 	JWTSecret        string        `env:"JWT_SECRET"`
-	JWTValidDuration time.Duration `env:"JWT_VALID_DURATION" env-default:"2m"`
+	JWTValidDuration time.Duration `env:"JWT_VALID_DURATION" env-default:"1h"`
 	BcryptSalt       int           `env:"BCRYPT_SALT"        env-default:"8"`
 }
 
@@ -108,7 +108,7 @@ type BucketConfig struct {
 	ID         string `env:"S3_ID"`
 	Secret     string `env:"S3_SECRET_KEY"`
 	BucketName string `env:"S3_BUCKET_NAME" env-default:"sprint-bucket-public-read"`
-	Region     string `env:"S3_REGION"      env-default:"ap-southeast-3"`
+	Region     string `env:"S3_REGION"      env-default:"ap-southeast-1"`
 	BaseURL    string `env:"S3_BASE_URL"`
 }
 
