@@ -48,7 +48,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return NewCustomErrorResponse(c, err)
 	}
 
-	return c.JSON(http.StatusCreated, response.BaseResponse{
+	return c.JSON(http.StatusOK, response.BaseResponse{
 		Message: "User logged successfully",
 		Data:    response.UserEntityToAuthResponse(user),
 	})
