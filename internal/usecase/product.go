@@ -23,6 +23,18 @@ func NewProductUsecase(productRepo internal.ProductRepository, uow internal.Unit
 	}
 }
 
+func (uc *product) GetDetailedByID(ctx context.Context, id int) (*entity.ProductDetail, error) {
+	userId := pkgcontext.GetUserIDContext(ctx)
+
+	data, err := uc.productRepo.GetDetailedByID(ctx, id, userId)
+	if err != nil {
+		log.Errorf("productUC.GetDetailedByID failed to uc.productRepo.GetDetailedByID: %w", err)
+		return nil, errorpkg.NewCustomError(http.StatusInternalServerError, err)
+
+	}
+	return data, nil
+}
+
 // Create implements internal.ProductUsecase.
 func (uc *product) Create(ctx context.Context, data *entity.Product) (*entity.Product, error) {
 	userID := pkgcontext.GetUserIDContext(ctx)

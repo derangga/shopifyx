@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/derangga/shopifyx/internal"
 	"github.com/derangga/shopifyx/internal/http/request"
@@ -22,6 +23,24 @@ func NewProductHandler(productUC internal.ProductUsecase, validate *validator.Va
 		productUC: productUC,
 		validate:  validate,
 	}
+}
+
+func (h *ProductHandler) GetDetailedByID(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BaseResponse{
+			Message: http.StatusText(http.StatusBadRequest),
+		})
+	}
+
+	product, err := h.productUC.GetDetailedByID(c.Request().Context(), id)
+	if err != nil {
+		return NewCustomErrorResponse(c, err)
+	}
+
+	return c.JSON(http.StatusOK, response.BaseResponse{
+		Data: response.ProductDetailToResponse(product),
+	})
 }
 
 func (h *ProductHandler) Create(c echo.Context) error {

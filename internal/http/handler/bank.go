@@ -52,7 +52,6 @@ func (h *BankHandler) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, response.BaseResponse{
 		Message: "bank account created successfully",
-		Data:    nil,
 	})
 }
 

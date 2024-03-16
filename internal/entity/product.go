@@ -20,6 +20,32 @@ type Product struct {
 	DeletedAt      time.Time
 }
 
+type ProductDetail struct {
+	ID             int
+	Name           string
+	Price          int
+	ImageURL       string
+	Stock          int
+	Condition      string
+	Tags           []string
+	IsPurchaseable bool
+	PurchaseCount  int
+	Seller         Seller
+}
+
+type Seller struct {
+	Name             string
+	ProductSoldTotal int
+	BankAccount      SellerBank
+}
+
+type SellerBank struct {
+	ID                int
+	BankName          string
+	BankAccountName   string
+	BankAccountNumber string
+}
+
 type ListProduct struct {
 	ID             int      `json:"productId" db:"id"`
 	Name           string   `json:"name" db:"name"`
