@@ -23,12 +23,13 @@ type BankRepository interface {
 
 type ProductRepository interface {
 	Get(ctx context.Context, id int) (*entity.Product, error)
+	Fetch(ctx context.Context, filter entity.ListFilter) ([]entity.ListProduct, *entity.MetaTpl, error)
 	Create(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	GetDetailedByID(ctx context.Context, id int, userId int) (*entity.ProductDetail, error)
 	Update(ctx context.Context, req *entity.Product) (*entity.Product, error)
 	Delete(ctx context.Context, req *entity.Product) error
 	UpdateStock(ctx context.Context, req *entity.Product) error
-	Fetch(ctx context.Context, filter entity.ListFilter) ([]entity.ListProduct, *entity.MetaTpl, error)
+	UpdatePurchaseCount(ctx context.Context, req *entity.Product) error
 }
 
 type ImageRepository interface {

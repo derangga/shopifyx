@@ -319,3 +319,17 @@ func (u *product) Fetch(ctx context.Context, filter entity.ListFilter) ([]entity
 
 	return result, pagination, nil
 }
+
+func (u *product) UpdatePurchaseCount(ctx context.Context, data *entity.Product) error {
+	//modify it to allow reuse by payment
+	_, err := handleTransaction(ctx, u.db, func(ctx context.Context, tx *sqlx.Tx) (*entity.Product, error) {
+		_, err := tx.ExecContext(ctx, query.ProductPurchaseCountUpdate, data.ID, data.UserID, data.PurchaseCount)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
+
+	return err
+}

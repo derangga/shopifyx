@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -16,6 +18,8 @@ import (
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/gommon/log"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 var (
@@ -58,6 +62,7 @@ var (
 		provideDB,
 		provideValidator,
 		provideS3Client,
+		providePrometheusHistogram,
 	)
 
 	allSet = wire.NewSet(
@@ -98,6 +103,14 @@ func provideValidator() *validator.Validate {
 
 func provideJWTAuth(cfg *config.AuthConfig) *middleware.JWTAuth {
 	return middleware.ProvideJWTAuth(cfg.JWTSecret)
+}
+
+func providePrometheusHistogram(cfg *config.Config) *prometheus.HistogramVec {
+	return promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name:    cfg.Application.Service,
+		Help:    fmt.Sprintf("Histogram of %s request duration.", cfg.Application.Service),
+		Buckets: prometheus.LinearBuckets(1, 1, 10), // Adjust bucket sizes as needed
+	}, []string{"path", "method", "status"})
 }
 
 func provideS3Client(cfg *config.BucketConfig) *s3.S3 {

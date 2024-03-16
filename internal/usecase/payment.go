@@ -60,6 +60,13 @@ func (uc *payment) Create(ctx context.Context, req *entity.Payment) error {
 			return err
 		}
 
+		product.PurchaseCount++
+		err = uc.productRepo.UpdatePurchaseCount(ctx, product)
+		if err != nil {
+			log.Error(err)
+			return err
+		}
+
 		err = uc.paymentRepo.Create(ctx, req)
 		if err != nil {
 			log.Error(err)
